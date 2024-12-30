@@ -1,0 +1,34 @@
+name: Commitlint
+on:
+  pull_request:
+    types: [opened, synchronize, edited, reopened]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Fetch main branch
+        run: git fetch origin main
+
+      - name: Create package.json
+        run: |
+          echo '{
+            "commitlint": {
+              "extends": [
+                "@commitlint/config-conventional"
+              ]
+            }
+          }' > package.json
+
+      - name: Install dependencies
+        run: |
+          npm install commitlint @commitlint/config-conventional
+          npm install --save-dev @commitlint/cli @commitlint/config-conventional
+
+      - name: Lint commits
+        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
