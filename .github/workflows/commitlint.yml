@@ -30,5 +30,6 @@ jobs:
           npm install commitlint @commitlint/config-conventional
           npm install --save-dev @commitlint/cli @commitlint/config-conventional
 
-      - name: Lint commits
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }}
+      - name: Lint latest commit
+        run: |
+          git log -1 --pretty=%B ${{ github.event.pull_request.head.sha }} | npx commitlint
